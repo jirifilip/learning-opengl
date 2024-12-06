@@ -11,13 +11,17 @@ New-Item -ItemType Directory "$BUILD_DIR"
 function Download-GitHub-Dependency {
     param (
         $Name,
-        $Url
+        $Url,
+        $Flatten = $true
     )
 
     $dependencyArchive = "$BUILD_DIR/${Name}.zip"
 
     Invoke-WebRequest $Url -OutFile $dependencyArchive
-    Expand-Archive $dependencyArchive "$BUILD_DIR"
+    
+    $expandPath = if ($Flatten -eq $true) {"$BUILD_DIR"} else {"$BUILD_DIR/$Name"}   
+    Expand-Archive $dependencyArchive "$expandPath"
+    
     Remove-Item $dependencyArchive
 }
 
@@ -40,6 +44,12 @@ function Compile-Dependency {
     Set-Location $ROOT_PATH
 }
 
+
+# https://glad.dav1d.de/#language=c&specification=gl&api=gl%3D3.3&api=gles1%3Dnone&api=gles2%3Dnone&api=glsc2%3Dnone&profile=core&loader=on
+Download-GitHub-Dependency "glad" "https://glad.dav1d.de/generated/tmp9aklh4jwglad/glad.zip" $false
+
+Download-GitHub-Dependency "freeglut-3.6.0" "https://github.com/freeglut/freeglut/archive/refs/tags/v3.6.0.zip"
+Compile-Dependency "freeglut-3.6.0"
 
 Download-GitHub-Dependency "glfw-3.4" "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.zip"
 Compile-Dependency "glfw-3.4"

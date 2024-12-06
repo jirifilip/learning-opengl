@@ -11,12 +11,18 @@ New-Item -ItemType Directory "$OUT_DIR"
 g++ -Wall -Wextra -Werror `
     -L build/googletest-1.15.2/build/lib `
     -L build/glfw-3.4/build/src `
+    -L build/freeglut-3.6.0/build/lib `
     -I build/googletest-1.15.2/googletest/include `
     -I build/googletest-1.15.2/googlemock/include `
     -I build/glfw-3.4/include `
+    -I build/freeglut-3.6.0/include `
+    -I build/glad/include `
+    -I build/glad/src `
     src/main.cpp `
     -o "$OUT_DIR/main.exe" `
-    -l glfw3
+    -l glfw3 `
+    -l freeglut `
+    -lgdi32
      
 
 if ($?) {
