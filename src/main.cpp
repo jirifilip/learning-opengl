@@ -1,8 +1,10 @@
 #include <iostream>
+#include <fstream>
 
 #include <glad.c>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <vector>
 
 
 void abortProgram(const std::string message) {
@@ -33,6 +35,18 @@ void processInput(GLFWwindow* window) {
 }
 
 
+std::string readFileContent(const std::string fileName) {
+    std::ifstream inputFileStream{ fileName };
+    // TODO: look more into how this std::string constructor from range works 
+    std::string content {
+        std::istreambuf_iterator<char>{ inputFileStream },
+        std::istreambuf_iterator<char>()
+    };
+
+    return content;
+}
+
+
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -56,6 +70,25 @@ int main() {
     glViewport(0, 0, 800, 600);
 
     glfwSetKeyCallback(window, handleKeyPress);
+
+    float vertices[] { 
+        -0.5f, -0.5f, 0.0f,
+        0.5f, -0.5f, 0.0f,
+        0.0f, 0.5f, 0.0f 
+    };
+
+    unsigned int vertexBufferID;
+    glGenBuffers(1, &vertexBufferID);
+    glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
+    glBufferData(
+        GL_ARRAY_BUFFER,
+        sizeof(vertices),
+        vertices,
+        GL_STATIC_DRAW
+    );
+
+    const std::string vertexShaderCode = readFileContent("src/shader.vert");
+    std::cout << vertexShaderCode << std::endl;
 
     while (!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);
