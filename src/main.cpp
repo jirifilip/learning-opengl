@@ -84,6 +84,44 @@ public:
         internalCode { code.data() } {
             compile();
         }
+
+    unsigned int getID() const {
+        return internalID;
+    }
+};
+
+
+class ShaderProgram {
+private:
+    unsigned int internalID;
+    const std::vector<Shader>& shaders;
+
+public:
+    ShaderProgram(const std::vector<Shader>& shaders) : shaders(shaders) {
+        internalID = glCreateProgram();
+
+        for (auto& shader : shaders) {
+            glAttachShader(internalID, shader.getID());
+        }
+
+        glLinkProgram(internalID);
+
+        int success;
+        char infoLog[512];
+
+        glGetProgramiv(internalID, GL_LINK_STATUS, &success);
+
+        if (!success) {
+            glGetProgramInfoLog(internalID, 512, NULL, infoLog);
+            abortProgram(std::string{ infoLog });
+        }
+
+        glUseProgram(internalID);
+
+        for (auto& shader : shaders) {
+            glDeleteShader(shader.getID());
+        }
+    }
 };
 
 
@@ -130,6 +168,9 @@ int main() {
 
     Shader vertexShader{ "src/shader.vert", GL_VERTEX_SHADER };
     Shader fragmentShader { "src/shader.frag", GL_FRAGMENT_SHADER };
+    std::vector shaders { vertexShader, fragmentShader };
+    
+    ShaderProgram program { shaders };
 
     while (!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);
