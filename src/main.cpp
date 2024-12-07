@@ -82,6 +82,7 @@ public:
         type { type }, 
         code { readFileContent(filename) },
         internalCode { code.data() } {
+            std::cout << "Shader: " << filename << std::endl;
             compile();
         }
 
@@ -116,11 +117,14 @@ public:
             abortProgram(std::string{ infoLog });
         }
 
-        glUseProgram(internalID);
 
         for (auto& shader : shaders) {
             glDeleteShader(shader.getID());
         }
+    }
+
+    void use() {
+        glUseProgram(internalID);
     }
 };
 
@@ -155,8 +159,21 @@ int main() {
         0.0f, 0.5f, 0.0f 
     };
 
-    unsigned int vertexBufferID;
+    
+    Shader vertexShader{ "src/shader.vert", GL_VERTEX_SHADER };
+    Shader fragmentShader { "src/shader.frag", GL_FRAGMENT_SHADER };
+    std::vector shaders { vertexShader, fragmentShader };
+    
+    ShaderProgram program { shaders };
+
+
+    unsigned int vertexBufferID, vertexArrayID;
     glGenBuffers(1, &vertexBufferID);
+    glGenVertexArrays(1, &vertexArrayID);
+
+
+    glBindVertexArray(vertexArrayID);
+
     glBindBuffer(GL_ARRAY_BUFFER, vertexBufferID);
     glBufferData(
         GL_ARRAY_BUFFER,
@@ -165,19 +182,20 @@ int main() {
         GL_STATIC_DRAW
     );
 
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
+    glEnableVertexAttribArray(0);
 
-    Shader vertexShader{ "src/shader.vert", GL_VERTEX_SHADER };
-    Shader fragmentShader { "src/shader.frag", GL_FRAGMENT_SHADER };
-    std::vector shaders { vertexShader, fragmentShader };
     
-    ShaderProgram program { shaders };
-
     while (!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
-        
+
+        program.use();
+        glBindVertexArray(vertexArrayID);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+     
         glfwPollEvents();
         processInput(window);
     }
