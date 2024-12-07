@@ -24,6 +24,15 @@ void handleKeyPress(
 }
 
 
+void processInput(GLFWwindow* window) {
+    auto keyStatus = glfwGetKey(window, GLFW_KEY_ESCAPE);
+    
+    if (keyStatus == GLFW_PRESS) {
+        glfwSetWindowShouldClose(window, true);
+    }
+}
+
+
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -50,7 +59,12 @@ int main() {
 
     while (!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);
+
+        glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+        glClear(GL_COLOR_BUFFER_BIT);
+        
         glfwPollEvents();
+        processInput(window);
     }
 
     glfwTerminate();
