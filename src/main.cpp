@@ -47,6 +47,46 @@ std::string readFileContent(const std::string fileName) {
 }
 
 
+class Shader {
+private:
+    std::string filename;
+    unsigned int type;
+    const std::string code;
+    const char* internalCode;
+    unsigned int internalID;
+
+    void compile() {
+        internalID = glCreateShader(type);
+
+        glShaderSource(internalID, 1, &internalCode, NULL);
+        glCompileShader(internalID);
+
+        checkCompilationSuccess();        
+    }
+
+    void checkCompilationSuccess() {
+        int success;
+        char infoLog[512];
+        glGetShaderiv(internalID, GL_COMPILE_STATUS, &success);
+
+        if (!success) {
+            glGetShaderInfoLog(internalID, 512, NULL, infoLog);
+            abortProgram(std::string{ infoLog });
+        }
+    }
+
+public:
+    Shader(const std::string filename, unsigned int type = GL_VERTEX_SHADER) 
+        : 
+        filename { filename },
+        type { type }, 
+        code { readFileContent(filename) },
+        internalCode { code.data() } {
+            compile();
+        }
+};
+
+
 int main() {
     glfwInit();
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -87,8 +127,9 @@ int main() {
         GL_STATIC_DRAW
     );
 
-    const std::string vertexShaderCode = readFileContent("src/shader.vert");
-    std::cout << vertexShaderCode << std::endl;
+
+    Shader vertexShader{ "src/shader.vert", GL_VERTEX_SHADER };
+    Shader fragmentShader { "src/shader.frag", GL_FRAGMENT_SHADER };
 
     while (!glfwWindowShouldClose(window)) {
         glfwSwapBuffers(window);

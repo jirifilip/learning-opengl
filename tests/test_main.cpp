@@ -2,6 +2,8 @@
 #include "gmock/gmock.h"
 
 
-TEST(Experiments, FileReading) {
-    ASSERT_EQ(1, 1);    
+TEST(Experiments, StreamIterators) {
+    auto iterator = std::istreambuf_iterator<char>();  
+
+    ASSERT_EQ(*iterator, '\xFF');
 }
