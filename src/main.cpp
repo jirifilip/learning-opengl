@@ -66,7 +66,7 @@ private:
     }
 
 public:
-    Shader(const std::string filename, unsigned int type = GL_VERTEX_SHADER) 
+    Shader(const std::string& filename, unsigned int type = GL_VERTEX_SHADER) 
         : 
         filename { filename },
         type { type }, 
@@ -121,7 +121,7 @@ public:
         return internalID;
     }
 
-    void setUniform(const std::string name, float x, float y, float z, float alpha) {
+    void setUniform(const std::string& name, float x, float y, float z, float alpha) {
         auto location = glGetUniformLocation(getID(), name.data());
         glUniform4f(location, x, y, z, alpha);
     }
