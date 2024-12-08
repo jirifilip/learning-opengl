@@ -7,6 +7,7 @@
 #include <vector>
 #include <memory>
 #include <functional>
+#include <cmath>
 
 
 void abortProgram(const std::string message) {
@@ -115,6 +116,15 @@ public:
     void use() {
         glUseProgram(internalID);
     }
+
+    unsigned int getID() {
+        return internalID;
+    }
+
+    void setUniform(const std::string name, float x, float y, float z, float alpha) {
+        auto location = glGetUniformLocation(getID(), name.data());
+        glUniform4f(location, x, y, z, alpha);
+    }
 };
 
 
@@ -221,8 +231,14 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        double time { glfwGetTime() };
+        double green { (std::sin(time) / 2.0f) + 0.5f };
+
         program.use();
+        program.setUniform("globalColor", 0, static_cast<float>(green), 0, 1);
+
         glBindVertexArray(vertexArrayID);
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
      
