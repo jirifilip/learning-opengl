@@ -177,12 +177,14 @@ int main() {
 
 
     float vertices[] { 
-        -0.5f, -0.5f, 0.0f,
-        0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f,
-        -0.9f, -0.8f, 0.0f,
-        -0.95f, -0.85f, 0.0f,
-        -1.0f, -1.0f, 0.0f,
+        0.5f,  0.5f, 0.0f,  // top right
+        0.5f, -0.5f, 0.0f,  // bottom right
+        -0.5f, -0.5f, 0.0f,  // bottom left
+        -0.5f,  0.5f, 0.0f  // top left
+    };
+    unsigned int indices[] {
+        0, 1, 3,  // first triangle
+        1, 2, 3, // second triangle
     };
     
     Shader vertexShader{ "src/shader.vert", GL_VERTEX_SHADER };
@@ -192,9 +194,10 @@ int main() {
     ShaderProgram program { shaders };
 
 
-    unsigned int vertexBufferID, vertexArrayID;
+    unsigned int vertexBufferID, vertexArrayID, elementBufferID;
     glGenVertexArrays(1, &vertexArrayID);
     glGenBuffers(1, &vertexBufferID);
+    glGenBuffers(1, &elementBufferID);
 
     glBindVertexArray(vertexArrayID);
 
@@ -205,6 +208,9 @@ int main() {
         vertices,
         GL_STATIC_DRAW
     );
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferID);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
     glEnableVertexAttribArray(0);
@@ -217,7 +223,8 @@ int main() {
 
         program.use();
         glBindVertexArray(vertexArrayID);
-        glDrawArrays(GL_TRIANGLES, 0, 6);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        glBindVertexArray(0);
      
         glfwPollEvents();
         processInput(window.get());
