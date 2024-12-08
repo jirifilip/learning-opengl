@@ -8,7 +8,6 @@
 
 
 void abortProgram(const std::string message) {
-    glfwTerminate();
     std::cerr << message << std::endl;
     std::abort();
 }
@@ -129,36 +128,50 @@ public:
 };
 
 
-int main() {
-    glfwInit();
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+class GLFW {
+public:
+    GLFW() {
+        glfwInit();
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    }
 
+    ~GLFW() {
+        glfwTerminate();
+    }
+};
+
+
+void loadGLAD() {
+    auto success = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
+    if (!success) {
+        abortProgram("Failed to initialize GLAD");
+    }
+}
+
+
+int main() {
+    auto glfw = GLFW();
     GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
 
     if (window == nullptr) {
         abortProgram("Failed to initialize window");
     }
-
     glfwMakeContextCurrent(window);
 
     // TODO: explore further
-    auto loaded = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
-    if (!loaded) {
-        abortProgram("Failed to initialize GLAD");
-    }
+    loadGLAD();
 
     glViewport(0, 0, 800, 600);
-
     glfwSetKeyCallback(window, handleKeyPress);
+
 
     float vertices[] { 
         -0.5f, -0.5f, 0.0f,
         0.5f, -0.5f, 0.0f,
         0.0f, 0.5f, 0.0f 
     };
-
     
     Shader vertexShader{ "src/shader.vert", GL_VERTEX_SHADER };
     Shader fragmentShader { "src/shader.frag", GL_FRAGMENT_SHADER };
@@ -200,6 +213,5 @@ int main() {
         processInput(window);
     }
 
-    glfwTerminate();
     return 0;
 }
