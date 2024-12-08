@@ -5,23 +5,13 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <vector>
+#include <memory>
+#include <functional>
 
 
 void abortProgram(const std::string message) {
     std::cerr << message << std::endl;
     std::abort();
-}
-
-
-void handleKeyPress(
-        [[maybe_unused]] GLFWwindow* window,
-        int key,
-        [[maybe_unused]] int scancode,
-        [[maybe_unused]] int action,
-        [[maybe_unused]] int mods
-    ) {
-    
-    std::cout << "Key pressed: " << key << std::endl;
 }
 
 
@@ -128,6 +118,8 @@ public:
 };
 
 
+typedef std::function<void(GLFWwindow*)> GLFWWindowDeleter;
+
 class GLFW {
 public:
     GLFW() {
@@ -135,10 +127,32 @@ public:
         glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
         glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
         glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
     }
 
     ~GLFW() {
         glfwTerminate();
+    }
+
+    std::unique_ptr<GLFWwindow, GLFWWindowDeleter> createWindow() {
+        GLFWwindow* rawWindow = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+
+        if (rawWindow == nullptr) {
+            abortProgram("Failed to initialize window");
+        }
+
+        return std::unique_ptr<GLFWwindow, GLFWWindowDeleter>(
+            rawWindow,
+            [](GLFWwindow* rawWindow) {
+                if (rawWindow != nullptr) {
+                 glfwDestroyWindow(rawWindow);
+                }   
+            }    
+        );
+    } 
+
+    void setCurrent(GLFWwindow* window) {
+        glfwMakeContextCurrent(window);
     }
 };
 
@@ -153,24 +167,19 @@ void loadGLAD() {
 
 int main() {
     auto glfw = GLFW();
-    GLFWwindow* window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
-
-    if (window == nullptr) {
-        abortProgram("Failed to initialize window");
-    }
-    glfwMakeContextCurrent(window);
+    auto window = glfw.createWindow();
+    glfw.setCurrent(window.get());
 
     // TODO: explore further
     loadGLAD();
 
     glViewport(0, 0, 800, 600);
-    glfwSetKeyCallback(window, handleKeyPress);
 
 
     float vertices[] { 
         -0.5f, -0.5f, 0.0f,
         0.5f, -0.5f, 0.0f,
-        0.0f, 0.5f, 0.0f 
+        0.0f, 0.5f, 0.0f,
     };
     
     Shader vertexShader{ "src/shader.vert", GL_VERTEX_SHADER };
@@ -181,9 +190,8 @@ int main() {
 
 
     unsigned int vertexBufferID, vertexArrayID;
-    glGenBuffers(1, &vertexBufferID);
     glGenVertexArrays(1, &vertexArrayID);
-
+    glGenBuffers(1, &vertexBufferID);
 
     glBindVertexArray(vertexArrayID);
 
@@ -197,10 +205,9 @@ int main() {
 
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*) 0);
     glEnableVertexAttribArray(0);
-
     
-    while (!glfwWindowShouldClose(window)) {
-        glfwSwapBuffers(window);
+    while (!glfwWindowShouldClose(window.get())) {
+        glfwSwapBuffers(window.get());
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -210,7 +217,7 @@ int main() {
         glDrawArrays(GL_TRIANGLES, 0, 3);
      
         glfwPollEvents();
-        processInput(window);
+        processInput(window.get());
     }
 
     return 0;
