@@ -1,13 +1,14 @@
 #include <iostream>
 #include <fstream>
-
-#include <glad.c>
-#include <glad/glad.h>
-#include <GLFW/glfw3.h>
 #include <vector>
 #include <memory>
 #include <functional>
 #include <cmath>
+
+#include <glad.c>
+#include <glad/glad.h>
+#include <GLFW/glfw3.h>
+#include <stb_image.h>
 
 
 void abortProgram(const std::string message) {
@@ -197,11 +198,24 @@ int main() {
         1, 2, 3, // second triangle
     };
     
+    /*    
+    float textureCoordinates[] = {
+        0, 0,
+        1, 0,
+        0.5, 1
+    };
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    */
+
     Shader vertexShader{ "src/shader.vert", GL_VERTEX_SHADER };
     Shader fragmentShader { "src/shader.frag", GL_FRAGMENT_SHADER };
     std::vector shaders { vertexShader, fragmentShader };
     
-    ShaderProgram program { shaders };
+    ShaderProgram shaderProgram { shaders };
 
 
     unsigned int vertexBufferID, vertexArrayID, elementBufferID;
@@ -244,11 +258,11 @@ int main() {
         double time { glfwGetTime() };
         double green { (std::sin(time) / 2.0f) + 0.5f };
 
-        program.use();
-        program.setUniform("globalColor", 0, static_cast<float>(green), 0, 1);
+        shaderProgram.use();
+        shaderProgram.setUniform("globalColor", 0, static_cast<float>(green), 0, 1);
 
         glBindVertexArray(vertexArrayID);
-        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+        // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
         glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
         glBindVertexArray(0);
      

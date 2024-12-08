@@ -8,7 +8,7 @@ if (Test-Path "$BUILD_DIR") {
 New-Item -ItemType Directory "$BUILD_DIR"
 
 
-function Download-GitHub-Dependency {
+function Download-Zip {
     param (
         $Name,
         $Url,
@@ -45,14 +45,16 @@ function Compile-Dependency {
 }
 
 
-# https://glad.dav1d.de/#language=c&specification=gl&api=gl%3D3.3&api=gles1%3Dnone&api=gles2%3Dnone&api=glsc2%3Dnone&profile=core&loader=on
-Download-GitHub-Dependency "glad" "https://glad.dav1d.de/generated/tmp9aklh4jwglad/glad.zip" $false
+Download-Zip "stb" "https://github.com/nothings/stb/archive/5c205738c191bcb0abc65c4febfa9bd25ff35234.zip"
 
-Download-GitHub-Dependency "freeglut-3.6.0" "https://github.com/freeglut/freeglut/archive/refs/tags/v3.6.0.zip"
+# https://glad.dav1d.de/#language=c&specification=gl&api=gl%3D3.3&api=gles1%3Dnone&api=gles2%3Dnone&api=glsc2%3Dnone&profile=core&loader=on
+Download-Zip "glad" "https://glad.dav1d.de/generated/tmp9aklh4jwglad/glad.zip" $false
+
+Download-Zip "freeglut-3.6.0" "https://github.com/freeglut/freeglut/archive/refs/tags/v3.6.0.zip"
 Compile-Dependency "freeglut-3.6.0"
 
-Download-GitHub-Dependency "glfw-3.4" "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.zip"
+Download-Zip "glfw-3.4" "https://github.com/glfw/glfw/releases/download/3.4/glfw-3.4.zip"
 Compile-Dependency "glfw-3.4"
 
-Download-GitHub-Dependency "googletest-1.15.2" "https://github.com/google/googletest/archive/refs/tags/v1.15.2.zip"
+Download-Zip "googletest-1.15.2" "https://github.com/google/googletest/archive/refs/tags/v1.15.2.zip"
 Compile-Dependency "googletest-1.15.2"

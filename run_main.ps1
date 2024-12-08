@@ -15,6 +15,7 @@ g++ -Wall -Wextra -Werror `
     -I build/freeglut-3.6.0/include `
     -I build/glad/include `
     -I build/glad/src `
+    -I build/stb* `
     src/main.cpp `
     -o "$OUT_DIR/main.exe" `
     -l glfw3 `
