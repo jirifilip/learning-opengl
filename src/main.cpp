@@ -145,7 +145,7 @@ public:
             rawWindow,
             [](GLFWwindow* rawWindow) {
                 if (rawWindow != nullptr) {
-                 glfwDestroyWindow(rawWindow);
+                    glfwDestroyWindow(rawWindow);
                 }   
             }    
         );
@@ -180,6 +180,9 @@ int main() {
         -0.5f, -0.5f, 0.0f,
         0.5f, -0.5f, 0.0f,
         0.0f, 0.5f, 0.0f,
+        -0.9f, -0.8f, 0.0f,
+        -0.95f, -0.85f, 0.0f,
+        -1.0f, -1.0f, 0.0f,
     };
     
     Shader vertexShader{ "src/shader.vert", GL_VERTEX_SHADER };
@@ -214,7 +217,7 @@ int main() {
 
         program.use();
         glBindVertexArray(vertexArrayID);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawArrays(GL_TRIANGLES, 0, 6);
      
         glfwPollEvents();
         processInput(window.get());
