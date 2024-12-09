@@ -8,6 +8,10 @@ if (Test-Path "$BUILD_DIR") {
 New-Item -ItemType Directory "$BUILD_DIR"
 
 
+$env:LIBRARY_PATH = ""
+$env:CPLUS_INCLUDE_PATH = ""
+
+
 function Download-Zip {
     param (
         $Name,
@@ -48,7 +52,7 @@ function Compile-Dependency {
 Download-Zip "stb" "https://github.com/nothings/stb/archive/5c205738c191bcb0abc65c4febfa9bd25ff35234.zip"
 
 # https://glad.dav1d.de/#language=c&specification=gl&api=gl%3D3.3&api=gles1%3Dnone&api=gles2%3Dnone&api=glsc2%3Dnone&profile=core&loader=on
-Download-Zip "glad" "https://glad.dav1d.de/generated/tmp9aklh4jwglad/glad.zip" $false
+Download-Zip "glad" "https://glad.dav1d.de/generated/tmp9po4luccglad/glad.zip" $false
 
 Download-Zip "freeglut-3.6.0" "https://github.com/freeglut/freeglut/archive/refs/tags/v3.6.0.zip"
 Compile-Dependency "freeglut-3.6.0"
