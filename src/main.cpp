@@ -1,20 +1,15 @@
 #include <iostream>
-#include <fstream>
 #include <vector>
 #include <memory>
 #include <functional>
 #include <cmath>
 
-#include <glad.c>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <stb_image.h>
 
-
-void abortProgram(const std::string message) {
-    std::cerr << message << std::endl;
-    std::abort();
-}
+#include "utils.h"
+#include "shader.h"
 
 
 void processInput(GLFWwindow* window) {
@@ -24,63 +19,6 @@ void processInput(GLFWwindow* window) {
         glfwSetWindowShouldClose(window, true);
     }
 }
-
-
-std::string readFileContent(const std::string fileName) {
-    std::ifstream inputFileStream{ fileName };
-    // TODO: look more into how this std::string constructor from range works 
-    std::string content {
-        std::istreambuf_iterator<char>{ inputFileStream },
-        std::istreambuf_iterator<char>()
-    };
-
-    return content;
-}
-
-
-class Shader {
-private:
-    std::string filename;
-    unsigned int type;
-    const std::string code;
-    const char* internalCode;
-    unsigned int internalID;
-
-    void compile() {
-        internalID = glCreateShader(type);
-
-        glShaderSource(internalID, 1, &internalCode, NULL);
-        glCompileShader(internalID);
-
-        checkCompilationSuccess();        
-    }
-
-    void checkCompilationSuccess() {
-        int success;
-        char infoLog[512];
-        glGetShaderiv(internalID, GL_COMPILE_STATUS, &success);
-
-        if (!success) {
-            glGetShaderInfoLog(internalID, 512, NULL, infoLog);
-            abortProgram(std::string{ infoLog });
-        }
-    }
-
-public:
-    Shader(const std::string& filename, unsigned int type = GL_VERTEX_SHADER) 
-        : 
-        filename { filename },
-        type { type }, 
-        code { readFileContent(filename) },
-        internalCode { code.data() } {
-            std::cout << "Shader: " << filename << std::endl;
-            compile();
-        }
-
-    unsigned int getID() const {
-        return internalID;
-    }
-};
 
 
 class ShaderProgram {
