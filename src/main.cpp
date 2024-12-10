@@ -23,10 +23,6 @@ void processInput(GLFWwindow* window) {
 }
 
 
-
-
-
-
 void loadGLAD() {
     auto success = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     if (!success) {
@@ -70,8 +66,8 @@ int main() {
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
     */
 
-    Shader vertexShader{ "src/shader.vert", GL_VERTEX_SHADER };
-    Shader fragmentShader { "src/shader.frag", GL_FRAGMENT_SHADER };
+    Shader vertexShader{ "shaders/shader.vert", GL_VERTEX_SHADER };
+    Shader fragmentShader { "shaders/shader.frag", GL_FRAGMENT_SHADER };
     std::vector shaders { vertexShader, fragmentShader };
     
     ShaderProgram shaderProgram { shaders };
