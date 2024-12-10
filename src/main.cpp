@@ -12,6 +12,7 @@
 #include "shader.h"
 #include "shader_program.h"
 #include "glfw_handler.h"
+#include "texture.h"
 
 
 void processInput(GLFWwindow* window) {
@@ -29,67 +30,6 @@ void loadGLAD() {
         abortProgram("Failed to initialize GLAD");
     }
 }
-
-
-class Texture {
-private:
-    int width;
-    int height;
-    int channels;
-
-    unsigned int internalID;
-
-    std::unique_ptr<unsigned char, std::function<void(unsigned char*)>> loadImage(const std::string& filename) {
-        auto pixelValues = std::unique_ptr<unsigned char, std::function<void(unsigned char*)>>(
-            stbi_load(filename.data(), &width, &height, &channels, 0),
-            [](unsigned char* pixelValues) {
-                stbi_image_free(pixelValues);
-            }
-        );
-
-        if (!pixelValues.get()) {
-            abortProgram("Could not load texture image: " + filename);
-        }
-
-        return pixelValues;
-    }
-
-public:
-    Texture(const std::string& filename) {
-        auto pixelValues = loadImage(filename);
-
-        glGenTextures(1, &internalID);
-        glBindTexture(GL_TEXTURE_2D, internalID);
-
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-
-        glTexImage2D(
-            GL_TEXTURE_2D, 
-            0, 
-            GL_RGB,
-            width,
-            height, 
-            0,
-            channels == 3 ? GL_RGB : GL_RGBA,
-            GL_UNSIGNED_BYTE,
-            pixelValues.get()
-        );
-        glGenerateMipmap(GL_TEXTURE_2D);
-    }
-
-    void use(GLenum unit = GL_TEXTURE0) {
-        glActiveTexture(unit);
-        glBindTexture(GL_TEXTURE_2D, getID());
-    }
-
-    unsigned int getID() {
-        return internalID;
-    }
-};
-
 
 
 int main() {
@@ -162,7 +102,7 @@ int main() {
     shaderProgram.use();
     shaderProgram.setUniform("textureSampler1", 0);
     shaderProgram.setUniform("textureSampler2", 1);
-    
+
     while (!glfwWindowShouldClose(window.get())) {
         glfwSwapBuffers(window.get());
 
