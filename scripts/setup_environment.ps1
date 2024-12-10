@@ -6,6 +6,7 @@ $libraryPaths = @(
 ) -join ";"
 $includePaths = @(
     "include",
+    "build/glm",
     "build/glfw-3.4/include",
     "build/freeglut-3.6.0/include",
     "build/glad/include",

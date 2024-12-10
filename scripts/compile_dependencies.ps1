@@ -1,5 +1,6 @@
 $BUILD_DIR = "build"
-$ROOT_PATH = $PSScriptRoot
+$ROOT_PATH = Get-Location
+
 
 if (Test-Path "$BUILD_DIR") {
     Remove-Item -Recurse "$BUILD_DIR"
@@ -48,6 +49,8 @@ function Compile-Dependency {
     Set-Location $ROOT_PATH
 }
 
+
+Download-Zip "glm-1.0.1" "https://github.com/g-truc/glm/releases/download/1.0.1/glm-1.0.1-light.zip"
 
 Download-Zip "stb" "https://github.com/nothings/stb/archive/5c205738c191bcb0abc65c4febfa9bd25ff35234.zip"
 
