@@ -11,6 +11,7 @@
 #include "utils.h"
 #include "shader.h"
 #include "shader_program.h"
+#include "glfw_handler.h"
 
 
 void processInput(GLFWwindow* window) {
@@ -22,43 +23,8 @@ void processInput(GLFWwindow* window) {
 }
 
 
-typedef std::function<void(GLFWwindow*)> GLFWWindowDeleter;
 
-class GLFW {
-public:
-    GLFW() {
-        glfwInit();
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-        glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-        glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-    }
-
-    ~GLFW() {
-        glfwTerminate();
-    }
-
-    std::unique_ptr<GLFWwindow, GLFWWindowDeleter> createWindow() {
-        GLFWwindow* rawWindow = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
-
-        if (rawWindow == nullptr) {
-            abortProgram("Failed to initialize window");
-        }
-
-        return std::unique_ptr<GLFWwindow, GLFWWindowDeleter>(
-            rawWindow,
-            [](GLFWwindow* rawWindow) {
-                if (rawWindow != nullptr) {
-                    glfwDestroyWindow(rawWindow);
-                }   
-            }    
-        );
-    } 
-
-    void setCurrent(GLFWwindow* window) {
-        glfwMakeContextCurrent(window);
-    }
-};
 
 
 void loadGLAD() {
@@ -70,7 +36,7 @@ void loadGLAD() {
 
 
 int main() {
-    auto glfw = GLFW();
+    auto glfw = GLFWHandler();
     auto window = glfw.createWindow();
     glfw.setCurrent(window.get());
 
