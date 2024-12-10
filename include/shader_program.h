@@ -19,4 +19,6 @@ public:
     unsigned int getID();
 
     void setUniform(const std::string& name, float x, float y, float z, float alpha);
+    
+    void setUniform(const std::string&name, int x);
 };

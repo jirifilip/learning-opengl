@@ -45,3 +45,9 @@ void ShaderProgram::setUniform(const std::string& name, float x, float y, float 
     auto location = glGetUniformLocation(getID(), name.data());
     glUniform4f(location, x, y, z, alpha);
 }
+
+
+void ShaderProgram::setUniform(const std::string& name, int x) {
+    auto location = glGetUniformLocation(getID(), name.data());
+    glUniform1i(location, x);
+}

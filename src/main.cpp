@@ -31,6 +31,67 @@ void loadGLAD() {
 }
 
 
+class Texture {
+private:
+    int width;
+    int height;
+    int channels;
+
+    unsigned int internalID;
+
+    std::unique_ptr<unsigned char, std::function<void(unsigned char*)>> loadImage(const std::string& filename) {
+        auto pixelValues = std::unique_ptr<unsigned char, std::function<void(unsigned char*)>>(
+            stbi_load(filename.data(), &width, &height, &channels, 0),
+            [](unsigned char* pixelValues) {
+                stbi_image_free(pixelValues);
+            }
+        );
+
+        if (!pixelValues.get()) {
+            abortProgram("Could not load texture image: " + filename);
+        }
+
+        return pixelValues;
+    }
+
+public:
+    Texture(const std::string& filename) {
+        auto pixelValues = loadImage(filename);
+
+        glGenTextures(1, &internalID);
+        glBindTexture(GL_TEXTURE_2D, internalID);
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+
+        glTexImage2D(
+            GL_TEXTURE_2D, 
+            0, 
+            GL_RGB,
+            width,
+            height, 
+            0,
+            channels == 3 ? GL_RGB : GL_RGBA,
+            GL_UNSIGNED_BYTE,
+            pixelValues.get()
+        );
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+
+    void use(GLenum unit = GL_TEXTURE0) {
+        glActiveTexture(unit);
+        glBindTexture(GL_TEXTURE_2D, getID());
+    }
+
+    unsigned int getID() {
+        return internalID;
+    }
+};
+
+
+
 int main() {
     auto glfw = GLFWHandler();
     auto window = glfw.createWindow();
@@ -43,35 +104,24 @@ int main() {
 
 
     float vertices[] { 
-        0.5f,  0.5f, 0.0f,  1, 0, 0,  // top right
-        0.5f, -0.5f, 0.0f,  0, 1, 0, // bottom right
-        -0.5f, -0.5f, 0.0f,  0, 0, 1, // bottom left
-        -0.5f,  0.5f, 0.0f,   0.5, 0.5, 0.5, // top left
+        0.5f,  0.5f, 0.0f,  1, 0, 0,  1, 1, // top right
+        0.5f, -0.5f, 0.0f,  0, 1, 0,  1, 0, // bottom right
+        -0.5f, -0.5f, 0.0f,  0, 0, 1,  0, 0, // bottom left
+        -0.5f,  0.5f, 0.0f,   0.5, 0.5, 0.5,  0, 1 // top left
     };
     unsigned int indices[] {
         0, 1, 3,  // first triangle
         1, 2, 3, // second triangle
     };
     
-    /*    
-    float textureCoordinates[] = {
-        0, 0,
-        1, 0,
-        0.5, 1
-    };
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-    */
-
     Shader vertexShader{ "shaders/shader.vert", GL_VERTEX_SHADER };
     Shader fragmentShader { "shaders/shader.frag", GL_FRAGMENT_SHADER };
     std::vector shaders { vertexShader, fragmentShader };
     
     ShaderProgram shaderProgram { shaders };
 
+    Texture wallTexture { "resources/wall.jpg" };
+    Texture faceTexture { "resources/awesomeface.png" };
 
     unsigned int vertexBufferID, vertexArrayID, elementBufferID;
     glGenVertexArrays(1, &vertexArrayID);
@@ -91,7 +141,7 @@ int main() {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, elementBufferID);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) 0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) 0);
     glEnableVertexAttribArray(0);
 
     glVertexAttribPointer(
@@ -99,10 +149,19 @@ int main() {
         3,
         GL_FLOAT,
         GL_FALSE,
-        6 * sizeof(float),
+        8 * sizeof(float),
         (void*) (3 * sizeof(float))
     );
     glEnableVertexAttribArray(1);
+
+    glVertexAttribPointer(
+        2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (6*sizeof(float))
+    );
+    glEnableVertexAttribArray(2);
+
+    shaderProgram.use();
+    shaderProgram.setUniform("textureSampler1", 0);
+    shaderProgram.setUniform("textureSampler2", 1);
     
     while (!glfwWindowShouldClose(window.get())) {
         glfwSwapBuffers(window.get());
@@ -110,11 +169,9 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        double time { glfwGetTime() };
-        double green { (std::sin(time) / 2.0f) + 0.5f };
-
-        shaderProgram.use();
-        shaderProgram.setUniform("globalColor", 0, static_cast<float>(green), 0, 1);
+        
+        wallTexture.use(GL_TEXTURE0);
+        faceTexture.use(GL_TEXTURE1);
 
         glBindVertexArray(vertexArrayID);
         // glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
