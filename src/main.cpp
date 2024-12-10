@@ -6,6 +6,8 @@
 
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <glm.hpp>
+#include <gtc/matrix_transform.hpp>
 #include <stb_image.h>
 
 #include "utils.h"
@@ -109,6 +111,14 @@ int main() {
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
+        glm::mat4 identity { 1 };
+        auto rotation = glm::rotate(
+            identity,
+            static_cast<float>(glfwGetTime()),
+            glm::vec3(0, 0, 1)
+        );
+
+        shaderProgram.setUniform("transformation", rotation);
         
         wallTexture.use(GL_TEXTURE0);
         faceTexture.use(GL_TEXTURE1);

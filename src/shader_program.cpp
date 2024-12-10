@@ -3,6 +3,7 @@
 #include "shader.h"
 #include "shader_program.h"
 #include "utils.h"
+#include <gtc/type_ptr.hpp>
 
 
 ShaderProgram::ShaderProgram(const std::vector<Shader>& shaders) : shaders(shaders) {
@@ -50,4 +51,9 @@ void ShaderProgram::setUniform(const std::string& name, float x, float y, float 
 void ShaderProgram::setUniform(const std::string& name, int x) {
     auto location = glGetUniformLocation(getID(), name.data());
     glUniform1i(location, x);
+}
+
+void ShaderProgram::setUniform(const std::string &name, glm::mat4 matrix) {
+    auto location = glGetUniformLocation(getID(), name.data());
+    glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(matrix));
 }
