@@ -32,9 +32,37 @@ TEST(Experiments, LoadImage) {
 }
 
 
-TEST(Experiments, TestGLM) {
+TEST(Experiments, TestIdentityMatrix) {
+    auto identity = glm::mat4(1);
+
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            auto value = identity[i][j];
+            if (i == j) {
+                ASSERT_EQ(value, 1);
+            } else {
+                ASSERT_EQ(value, 0);
+            }
+        }
+    }
+}
+
+
+TEST(Experiments, TestTranslationMatrix) {
     glm::vec4 vector1{ 1, 0, 0, 1 };
     glm::mat4 translationMatrix = glm::translate(glm::mat4(1), glm::vec3(1, 1, 0));
+
+    auto translatedVector = translationMatrix * vector1;
     
-    ASSERT_GE((translationMatrix * vector1).x, 1);
+    ASSERT_EQ(translatedVector.x, 2);
+    ASSERT_EQ(translatedVector.y, 1);
+    ASSERT_EQ(translatedVector.z, 0);
+    ASSERT_EQ(translatedVector.w, 1);
+}
+
+
+TEST(Experiments, TestMultipleTransformations) {
+    glm::mat4 identity = glm::mat4(1);
+    auto rotated = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0, 0, 1));
+    auto scaled = glm::scale(rotated, glm::vec3(0.5, 0.5, 0.5));
 }
