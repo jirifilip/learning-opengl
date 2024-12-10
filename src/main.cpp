@@ -10,6 +10,7 @@
 
 #include "utils.h"
 #include "shader.h"
+#include "shader_program.h"
 
 
 void processInput(GLFWwindow* window) {
@@ -19,52 +20,6 @@ void processInput(GLFWwindow* window) {
         glfwSetWindowShouldClose(window, true);
     }
 }
-
-
-class ShaderProgram {
-private:
-    unsigned int internalID;
-    const std::vector<Shader>& shaders;
-
-public:
-    ShaderProgram(const std::vector<Shader>& shaders) : shaders(shaders) {
-        internalID = glCreateProgram();
-
-        for (auto& shader : shaders) {
-            glAttachShader(internalID, shader.getID());
-        }
-
-        glLinkProgram(internalID);
-
-        int success;
-        char infoLog[512];
-
-        glGetProgramiv(internalID, GL_LINK_STATUS, &success);
-
-        if (!success) {
-            glGetProgramInfoLog(internalID, 512, NULL, infoLog);
-            abortProgram(std::string{ infoLog });
-        }
-
-
-        for (auto& shader : shaders) {
-            glDeleteShader(shader.getID());
-        }
-    }
-
-    void use() {
-        glUseProgram(internalID);
-    }
-
-    unsigned int getID() {
-        return internalID;
-    }
-
-    void setUniform(const std::string& name, float x, float y, float z, float alpha) {
-        auto location = glGetUniformLocation(getID(), name.data());
-        glUniform4f(location, x, y, z, alpha);
-    }
-};
 
 
 typedef std::function<void(GLFWwindow*)> GLFWWindowDeleter;
