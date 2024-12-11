@@ -105,20 +105,26 @@ int main() {
     shaderProgram.setUniform("textureSampler1", 0);
     shaderProgram.setUniform("textureSampler2", 1);
 
+    glm::mat4 identity { 1 };
+    auto modelMatrix = glm::rotate(
+        identity,
+        glm::radians(-55.0f),
+        glm::vec3{ 1, 0, 0 }
+    );
+    auto viewMatrix = glm::translate(identity, glm::vec3{ 0, 0, -3 });
+    auto projectionMatrix = glm::perspective(
+        glm::radians(45.0f), static_cast<float>(800 / 600), 0.1f, 100.0f
+    );
+
     while (!glfwWindowShouldClose(window.get())) {
         glfwSwapBuffers(window.get());
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glm::mat4 identity { 1 };
-        auto rotation = glm::rotate(
-            identity,
-            static_cast<float>(glfwGetTime()),
-            glm::vec3(0, 0, 1)
-        );
-
-        shaderProgram.setUniform("transformation", rotation);
+        shaderProgram.setUniform("modelMatrix", modelMatrix);
+        shaderProgram.setUniform("viewMatrix", viewMatrix);
+        shaderProgram.setUniform("projectionMatrix", projectionMatrix);
         
         wallTexture.use(GL_TEXTURE0);
         faceTexture.use(GL_TEXTURE1);
