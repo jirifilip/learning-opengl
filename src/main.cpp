@@ -112,8 +112,12 @@ int main() {
         glm::vec3{ 1, 0, 0 }
     );
     auto viewMatrix = glm::translate(identity, glm::vec3{ 0, 0, -3 });
-    auto projectionMatrix = glm::perspective(
+    [[maybe_unused]] auto perspectiveProjectionMatrix = glm::perspective(
         glm::radians(45.0f), static_cast<float>(800 / 600), 0.1f, 100.0f
+    );
+    // TODO: come back to this
+    [[maybe_unused]] auto orthographicProjectionMatrix = glm::ortho(
+        0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f
     );
 
     while (!glfwWindowShouldClose(window.get())) {
@@ -124,7 +128,7 @@ int main() {
 
         shaderProgram.setUniform("modelMatrix", modelMatrix);
         shaderProgram.setUniform("viewMatrix", viewMatrix);
-        shaderProgram.setUniform("projectionMatrix", projectionMatrix);
+        // shaderProgram.setUniform("projectionMatrix", orthographicProjectionMatrix);
         
         wallTexture.use(GL_TEXTURE0);
         faceTexture.use(GL_TEXTURE1);
