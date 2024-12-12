@@ -1,19 +1,59 @@
 $OUT_DIR = "out"
 $ROOT_PATH = $PSScriptRoot
 
-if (Test-Path "$OUT_DIR") {
-    Remove-Item -Recurse "$OUT_DIR"
+if (!(Test-Path "$OUT_DIR")) {
+    New-Item -ItemType Directory "$OUT_DIR"
 }
 
-New-Item -ItemType Directory "$OUT_DIR"
+
+function Needs-Recompilation {
+    param (
+        $sourceFile,
+        $outFile
+    )
+
+    if (!(Test-Path -Path $sourceFile)) {
+        return $true
+    }
+
+    if (!(Test-Path -Path $outFile)) {
+        return $true
+    }
+
+    $sourceTimestamp = (Get-Item $sourceFile).LastWriteTime
+    $outTimestamp = (Get-Item $outFile).LastWriteTime
+
+    if ($sourceTimestamp -gt $outTimestamp) {
+        return $true
+    }
+
+    return $false
+}
 
 
-g++ -c src/stb_image.cpp -o "$OUT_DIR/stb_image.a"
-g++ -c -Wall -Wextra -Werror build/glad/src/glad.c  -o "$OUT_DIR/glad.a"
+function Compile-Source-File {
+    param (
+        $Name,
+        $SourceDir = "src"
+    )
 
-g++ -c -Wall -Wextra -Werror src/main.cpp  -o "$OUT_DIR/main.a" 
-g++ -c -Wall -Wextra -Werror src/utils.cpp  -o "$OUT_DIR/utils.a" 
-g++ -c -Wall -Wextra -Werror src/shader.cpp  -o "$OUT_DIR/shader.a" 
-g++ -c -Wall -Wextra -Werror src/shader_program.cpp  -o "$OUT_DIR/shader_program.a" 
-g++ -c -Wall -Wextra -Werror src/glfw_handler.cpp  -o "$OUT_DIR/glfw_handler.a"
-g++ -c -Wall -Wextra -Werror src/texture.cpp  -o "$OUT_DIR/texture.a" 
+    $baseName = (Get-Item "$SourceDir/$Name").BaseName
+
+    $sourceFile = "$SourceDir/${Name}"
+    $outFile = "$OUT_DIR/${baseName}.a"
+
+    if (Needs-Recompilation $sourceFile $outFile) {
+        Write-Host "Compiling ${baseName}"
+        g++ -c -Wall -Wextra -Werror $sourceFile -o $outFile
+    }
+}
+
+
+Compile-Source-File "stb_image.cpp"
+Compile-Source-File "glad.c" "build/glad/src"
+Compile-Source-File "main.cpp"
+Compile-Source-File "utils.cpp"
+Compile-Source-File "shader.cpp"
+Compile-Source-File "shader_program.cpp"
+Compile-Source-File "glfw_handler.cpp"
+Compile-Source-File "texture.cpp"

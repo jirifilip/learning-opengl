@@ -5,6 +5,8 @@ set dotenv-load
 dependencies $LIBRARY_PATH="" $CPLUS_INCLUDE_PATH="":
     ./scripts/compile_dependencies.ps1
 
+clean:
+    Remove-Item -Recurse out
 
 setup-environment:
     ./scripts/setup_environment.ps1
