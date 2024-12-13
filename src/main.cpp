@@ -155,6 +155,7 @@ int main() {
     shaderProgram.setUniform("viewMatrix", viewMatrix);
     shaderProgram.setUniform("projectionMatrix", perspectiveProjectionMatrix);
 
+
     while (!glfwWindowShouldClose(window.get())) {
         glfwSwapBuffers(window.get());
 

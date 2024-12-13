@@ -49,11 +49,14 @@ function Compile-Source-File {
 }
 
 
-Compile-Source-File "stb_image.cpp"
+$sourceFiles = Get-ChildItem -Path src -Recurse |
+    Where-Object { $_.Extension -eq ".cpp" }
+
+
+foreach ($sourceFile in $sourceFiles) {
+    Compile-Source-File "$($sourceFile.BaseName)$($sourceFile.Extension)" "$($sourceFile.DirectoryName)"
+}
+
+
 Compile-Source-File "glad.c" "build/glad/src"
-Compile-Source-File "main.cpp"
-Compile-Source-File "utils.cpp"
-Compile-Source-File "shader.cpp"
-Compile-Source-File "shader_program.cpp"
-Compile-Source-File "glfw_handler.cpp"
-Compile-Source-File "texture.cpp"
+
