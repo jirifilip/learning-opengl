@@ -60,3 +60,4 @@ void Texture::use(GLenum unit) {
 unsigned int Texture::getID() {
     return internalID;
 }
+
