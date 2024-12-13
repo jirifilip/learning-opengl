@@ -4,7 +4,10 @@ param(
 
 $OUT_DIR = "out"
 
-$librariesToLink = Get-ChildItem -Path $OUT_DIR | Where-Object { $_.Extension -eq ".a" } | ForEach-Object { $_.FullName }
+$librariesToLink = Get-ChildItem -Path $OUT_DIR |
+    Where-Object { $_.Extension -eq ".a" } |
+    Where-Object { !$_.BaseName.StartsWith("test") } |
+    ForEach-Object { $_.FullName }
 
 g++ "$OUT_DIR/executable/$MainName.a" `
     @($librariesToLink) `
