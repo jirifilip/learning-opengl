@@ -64,5 +64,5 @@ TEST(Experiments, TestTranslationMatrix) {
 TEST(Experiments, TestMultipleTransformations) {
     glm::mat4 identity = glm::mat4(1);
     auto rotated = glm::rotate(identity, glm::radians(90.0f), glm::vec3(0, 0, 1));
-    auto scaled = glm::scale(rotated, glm::vec3(0.5, 0.5, 0.5));
+    [[maybe_unused]] auto scaled = glm::scale(rotated, glm::vec3(0.5, 0.5, 0.5));
 }
