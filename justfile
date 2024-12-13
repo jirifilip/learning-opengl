@@ -16,8 +16,8 @@ compile: setup-environment
     ./scripts/compile_src.ps1
 
 
-main: compile
-    ./scripts/run_main.ps1
+run main_file: compile
+    ./scripts/run_main.ps1 {{ main_file }}
 
 
 test: compile
