@@ -133,14 +133,12 @@ int main() {
     );
     glEnableVertexAttribArray(1);
 
-    /*
-    auto cameraPosition = glm::vec3{ 0, 0, 3 };
-    auto cameraTarget = glm::vec3(0, 0, 0);
-    auto cameraDirection = glm::normalize(cameraPosition - cameraTarget);
-    */
-
     glm::mat4 identity { 1 };
-    auto viewMatrix = glm::translate(identity, glm::vec3{ 0, 0, -3 });
+    auto viewMatrix = glm::lookAt(
+        glm::vec3 { 0, 0, 3 },
+        glm::vec3 { 0, 0, 0 },
+        glm::vec3 { 0, 1, 0 }
+    );
     [[maybe_unused]] auto perspectiveProjectionMatrix = glm::perspective(
         glm::radians(45.0f), static_cast<float>(800 / 600), 0.1f, 100.0f
     );
