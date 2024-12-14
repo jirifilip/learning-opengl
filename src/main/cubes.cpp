@@ -15,15 +15,38 @@
 #include "shader.h"
 #include "shader_program.h"
 #include "glfw_handler.h"
+#include "glfw_timer.h"
 #include "texture.h"
 #include "camera.h"
 
 
+Camera camera {
+    glm::vec3{ 0, 0, 3 },
+    glm::vec3{ 0, 0, -1 },
+    5
+};
+GLFWTimer timer {};
+
+
+
 void processInput(GLFWwindow* window) {
     auto keyStatus = glfwGetKey(window, GLFW_KEY_ESCAPE);
+    auto dt = timer.getTimeDifference();
     
     if (keyStatus == GLFW_PRESS) {
         glfwSetWindowShouldClose(window, true);
+    } 
+    else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
+        camera.moveForward(dt);
+    }
+    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
+        camera.moveBackward(dt);
+    }
+    else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
+        camera.moveLeft(dt);
+    }
+    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+        camera.moveRight(dt);
     }
 }
 
@@ -112,12 +135,6 @@ int main() {
     Texture wallTexture { "resources/wall.jpg" };
     Texture faceTexture { "resources/awesomeface.png" };
 
-    Camera camera {
-        glm::vec3{ 0, 0, 3 },
-        glm::vec3{ 0, 0, -1 },
-        25
-    };
-
     unsigned int vertexBufferID, vertexArrayID;
     glGenVertexArrays(1, &vertexArrayID);
     glGenBuffers(1, &vertexBufferID);
@@ -156,6 +173,8 @@ int main() {
 
 
     while (!glfwWindowShouldClose(window.get())) {
+        timer.tick();
+
         glfwSwapBuffers(window.get());
 
         auto viewMatrix = camera.lookThrough();
