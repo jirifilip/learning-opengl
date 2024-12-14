@@ -133,12 +133,9 @@ int main() {
     );
     glEnableVertexAttribArray(1);
 
+    const float radius { 10 };
+
     glm::mat4 identity { 1 };
-    auto viewMatrix = glm::lookAt(
-        glm::vec3 { 0, 0, 3 },
-        glm::vec3 { 0, 0, 0 },
-        glm::vec3 { 0, 1, 0 }
-    );
     [[maybe_unused]] auto perspectiveProjectionMatrix = glm::perspective(
         glm::radians(45.0f), static_cast<float>(800 / 600), 0.1f, 100.0f
     );
@@ -150,12 +147,22 @@ int main() {
     shaderProgram.use();
     shaderProgram.setUniform("textureSampler1", 0);
     shaderProgram.setUniform("textureSampler2", 1);
-    shaderProgram.setUniform("viewMatrix", viewMatrix);
     shaderProgram.setUniform("projectionMatrix", perspectiveProjectionMatrix);
 
 
     while (!glfwWindowShouldClose(window.get())) {
         glfwSwapBuffers(window.get());
+
+        float time = glfwGetTime();
+        float cameraX = std::sin(time) * radius;
+        float cameraZ = std::cos(time) * radius;
+        auto viewMatrix = glm::lookAt(
+            glm::vec3 { cameraX, 0, cameraZ },
+            glm::vec3 { 0, 0, 0 },
+            glm::vec3 { 0, 1, 0 }
+        );
+        shaderProgram.setUniform("viewMatrix", viewMatrix);
+
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
