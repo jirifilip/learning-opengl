@@ -16,6 +16,7 @@
 #include "shader_program.h"
 #include "glfw_handler.h"
 #include "texture.h"
+#include "camera.h"
 
 
 void processInput(GLFWwindow* window) {
@@ -111,6 +112,12 @@ int main() {
     Texture wallTexture { "resources/wall.jpg" };
     Texture faceTexture { "resources/awesomeface.png" };
 
+    Camera camera {
+        glm::vec3{ 0, 0, 3 },
+        glm::vec3{ 0, 0, -1 },
+        25
+    };
+
     unsigned int vertexBufferID, vertexArrayID;
     glGenVertexArrays(1, &vertexArrayID);
     glGenBuffers(1, &vertexBufferID);
@@ -133,8 +140,6 @@ int main() {
     );
     glEnableVertexAttribArray(1);
 
-    const float radius { 10 };
-
     glm::mat4 identity { 1 };
     [[maybe_unused]] auto perspectiveProjectionMatrix = glm::perspective(
         glm::radians(45.0f), static_cast<float>(800 / 600), 0.1f, 100.0f
@@ -153,14 +158,7 @@ int main() {
     while (!glfwWindowShouldClose(window.get())) {
         glfwSwapBuffers(window.get());
 
-        float time = glfwGetTime();
-        float cameraX = std::sin(time) * radius;
-        float cameraZ = std::cos(time) * radius;
-        auto viewMatrix = glm::lookAt(
-            glm::vec3 { cameraX, 0, cameraZ },
-            glm::vec3 { 0, 0, 0 },
-            glm::vec3 { 0, 1, 0 }
-        );
+        auto viewMatrix = camera.lookThrough();
         shaderProgram.setUniform("viewMatrix", viewMatrix);
 
 
