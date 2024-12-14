@@ -102,8 +102,8 @@ int main() {
         glm::vec3(-1.3f,  1.0f, -1.5f)  
     };
 
-    Shader vertexShader{ "shaders/shader.vert", GL_VERTEX_SHADER };
-    Shader fragmentShader { "shaders/shader.frag", GL_FRAGMENT_SHADER };
+    Shader vertexShader{ "shaders/cubes/shader.vert", GL_VERTEX_SHADER };
+    Shader fragmentShader { "shaders/cubes/shader.frag", GL_FRAGMENT_SHADER };
     std::vector shaders { vertexShader, fragmentShader };
     
     ShaderProgram shaderProgram { shaders };
