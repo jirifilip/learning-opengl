@@ -30,6 +30,10 @@ void Camera::moveBackward(float timeDifference) {
     position -= forward * speed * timeDifference;
 }
 
+void Camera::setForward(glm::vec3 forward) {
+    forward = forward;
+}
+
 
 const glm::vec3 Camera::getPosition() {
     return position;

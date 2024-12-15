@@ -18,6 +18,7 @@
 #include "glfw_timer.h"
 #include "texture.h"
 #include "camera.h"
+#include "mouse_capturer.h"
 
 
 Camera camera {
@@ -26,6 +27,7 @@ Camera camera {
     5
 };
 GLFWTimer timer {};
+MouseCapturer mouseCapturer {};
 
 
 
@@ -63,6 +65,9 @@ int main() {
     auto glfw = GLFWHandler();
     auto window = glfw.createWindow();
     glfw.setCurrent(window.get());
+
+    auto windowRaw = window.get();
+    mouseCapturer.captureForWindow(windowRaw);
 
     // TODO: explore further
     loadGLAD();
@@ -171,7 +176,6 @@ int main() {
     shaderProgram.setUniform("textureSampler2", 1);
     shaderProgram.setUniform("projectionMatrix", perspectiveProjectionMatrix);
 
-
     while (!glfwWindowShouldClose(window.get())) {
         timer.tick();
 
@@ -205,6 +209,17 @@ int main() {
             i++;
         }
         glBindVertexArray(0);
+
+        float pitch = mouseCapturer.getPitch();
+        float yaw = mouseCapturer.getYaw();
+
+        glm::vec3 direction;
+        direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+        direction.y = sin(glm::radians(pitch));
+        direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+
+        camera.setForward(direction);
+        std::cout << direction.x << std::endl;
 
         glfwPollEvents();
         processInput(window.get());

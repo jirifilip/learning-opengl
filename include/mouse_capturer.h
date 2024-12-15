@@ -16,11 +16,11 @@ private:
     float lastMouseY = 0;
 
     void handleMouseMove(double positionX, double positionY) {
-        lastMouseX = positionX;
-        lastMouseY = positionY;
-
         float offsetX { (positionX - lastMouseX) * sensitivity };
         float offsetY { (lastMouseY - positionY) * sensitivity };
+
+        lastMouseX = positionX;
+        lastMouseY = positionY;
 
         yaw += offsetX;
         pitch += offsetY; 
@@ -42,8 +42,8 @@ private:
     }
 
 public:
-    void captureFromWindow(GLFWwindow* window) {
-        window = window;
+    void captureForWindow(GLFWwindow* windowToCapture) {
+        window = windowToCapture;
         glfwSetWindowUserPointer(window, this);
 
         int width;

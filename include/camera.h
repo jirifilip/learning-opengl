@@ -21,6 +21,8 @@ public:
 
     void moveBackward(float timeDifference);
 
+    void setForward(glm::vec3 forward);
+
     const glm::vec3 getPosition();
 
     const glm::vec3 getForward();
