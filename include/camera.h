@@ -1,56 +1,32 @@
 #pragma once
 
 #include <glm.hpp>
-#include <gtc/matrix_transform.hpp>
 
 
 class Camera {
 private:
-    float speed;
     glm::vec3 position;
     glm::vec3 forward;
+    float speed;
     glm::vec3 up { 0, 1, 0 };
 
 public:
-    Camera(glm::vec3 position, glm::vec3 forward, float speed = 25) : 
-        position { position },
-        forward { forward },
-        speed { speed } {}
+    Camera(glm::vec3 position, glm::vec3 forward, float speed);
 
-    void moveLeft(float timeDifference) {
-        position -= glm::normalize(glm::cross(forward, up)) * speed * timeDifference;
-    }
+    void moveLeft(float timeDifference);
 
-    void moveRight(float timeDifference) {
-        position += glm::normalize(glm::cross(forward, up)) * speed * timeDifference;
-    }
+    void moveRight(float timeDifference);
 
-    void moveForward(float timeDifference) {
-        position += forward * speed * timeDifference;
-    }
+    void moveForward(float timeDifference);
 
-    void moveBackward(float timeDifference) {
-        position -= forward * speed * timeDifference;
-    }
+    void moveBackward(float timeDifference);
 
-    const glm::vec3 getPosition() {
-        return position;
-    }
+    const glm::vec3 getPosition();
 
-    const glm::vec3 getForward() {
-        return forward;
-    }
+    const glm::vec3 getForward();
 
-    const glm::vec3 getUp() {
-        return up;
-    }
+    const glm::vec3 getUp();
 
-    const glm::mat4x4 lookThrough() {
-        return glm::lookAt(
-            getPosition(),
-            getPosition() + getForward(),
-            getUp()
-        );
-    }
+    const glm::mat4x4 lookThrough();
 
 };

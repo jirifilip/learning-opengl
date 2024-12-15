@@ -9,14 +9,7 @@ private:
     float timeDifferenceBetweenTicks { 0 };
 
 public:    
-    void tick() {
-        float timeAtCurrentTick = glfwGetTime();
-        timeDifferenceBetweenTicks = timeAtCurrentTick - timeAtPreviousTick;
-        timeAtPreviousTick = timeAtCurrentTick;
-    }
+    void tick();
 
-    const float getTimeDifference() {
-        return timeDifferenceBetweenTicks;
-    }
-
+    float getTimeDifference();
 };
