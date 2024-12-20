@@ -36,31 +36,6 @@ GLFWTimer timer {};
 MouseCapturer mouseCapturer { 0.05 };
 
 
-void processInput(GLFWwindow* window) {
-    auto keyStatus = glfwGetKey(window, GLFW_KEY_ESCAPE);
-    auto dt = timer.getTimeDifference();
-    
-    if (keyStatus == GLFW_PRESS) {
-        glfwSetWindowShouldClose(window, true);
-    } 
-    else if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-        camera.moveForward(dt);
-    }
-    else if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-        camera.moveBackward(dt);
-    }
-    else if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-        camera.moveLeft(dt);
-    }
-    else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-        camera.moveRight(dt);
-    }
-    else if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS) {
-        camera.moveUp(dt);
-    }
-}
-
-
 void loadGLAD() {
     auto success = gladLoadGLLoader((GLADloadproc) glfwGetProcAddress);
     if (!success) {
@@ -183,10 +158,10 @@ int main() {
         timer.tick();
 
         camera.setForward(mouseCapturer.getPointingDirection());
-
-        processInput(window.get());
-
         auto viewMatrix = camera.lookThrough();
+
+        processWindowQuit(window.get());
+        processMovement(window.get(), camera, timer);
         
         shaderProgram.setUniform("viewMatrix", viewMatrix);
 
