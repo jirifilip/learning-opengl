@@ -30,30 +30,16 @@ void Camera::moveBackward(float timeDifference) {
     position -= forward * speed * timeDifference;
 }
 
+
 void Camera::setForward(glm::vec3 forward) {
     this->forward = forward;
 }
 
 
-const glm::vec3 Camera::getPosition() {
-    return position;
-}
-
-
-const glm::vec3 Camera::getForward() {
-    return forward;
-}
-
-
-const glm::vec3 Camera::getUp() {
-    return up;
-}
-
-
 const glm::mat4x4 Camera::lookThrough() {
     return glm::lookAt(
-        getPosition(),
-        getPosition() + getForward(),
-        getUp()
+        position,
+        position + forward,
+        up
     );
 }
