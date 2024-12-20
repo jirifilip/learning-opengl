@@ -60,11 +60,13 @@ public:
         glfwSetCursorPosCallback(window, MouseCapturer::mouseCallback);
     };
 
-    float getPitch() {
-        return pitch;
-    }
-
-    float getYaw() {
-        return yaw;
+    glm::vec3 getPointingDirection() {
+        glm::vec3 direction;
+        
+        direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+        direction.y = sin(glm::radians(pitch));
+        direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+        
+        return glm::normalize(direction);
     }
 };
