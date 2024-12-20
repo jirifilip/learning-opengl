@@ -21,6 +21,8 @@ public:
 
     void moveBackward(float timeDifference);
 
+    void moveUp(float timeDifference); 
+
     void setForward(glm::vec3 forward);
 
     const glm::mat4x4 lookThrough();
