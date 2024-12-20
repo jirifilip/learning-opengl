@@ -5,7 +5,7 @@
 
 class MouseCapturer {
 private:
-    const float sensitivity { 0.1 };
+    float sensitivity { 0.1 };
 
     float pitch { 0 };
     float yaw { -90 };
@@ -42,6 +42,8 @@ private:
     }
 
 public:
+    MouseCapturer(float sensitivity = 0.01): sensitivity(sensitivity) {};
+
     void captureForWindow(GLFWwindow* windowToCapture) {
         window = windowToCapture;
         glfwSetWindowUserPointer(window, this);

@@ -31,7 +31,7 @@ void Camera::moveBackward(float timeDifference) {
 }
 
 void Camera::setForward(glm::vec3 forward) {
-    forward = forward;
+    this->forward = forward;
 }
 
 

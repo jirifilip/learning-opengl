@@ -1,3 +1,5 @@
+#define GLM_ENABLE_EXPERIMENTAL
+
 #include <iostream>
 #include <vector>
 #include <memory>
@@ -8,6 +10,7 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <glm.hpp>
+#include <gtx/string_cast.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <stb_image.h>
 
@@ -27,7 +30,7 @@ Camera camera {
     5
 };
 GLFWTimer timer {};
-MouseCapturer mouseCapturer {};
+MouseCapturer mouseCapturer { 0.05 };
 
 
 
@@ -179,11 +182,22 @@ int main() {
     while (!glfwWindowShouldClose(window.get())) {
         timer.tick();
 
-        glfwSwapBuffers(window.get());
+        float pitch = mouseCapturer.getPitch();
+        float yaw = mouseCapturer.getYaw();
+
+        glm::vec3 direction;
+        direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+        direction.y = sin(glm::radians(pitch));
+        direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+        direction = glm::normalize(direction);
+
+        camera.setForward(direction);
+
+        processInput(window.get());
 
         auto viewMatrix = camera.lookThrough();
+        
         shaderProgram.setUniform("viewMatrix", viewMatrix);
-
 
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -210,19 +224,8 @@ int main() {
         }
         glBindVertexArray(0);
 
-        float pitch = mouseCapturer.getPitch();
-        float yaw = mouseCapturer.getYaw();
-
-        glm::vec3 direction;
-        direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-        direction.y = sin(glm::radians(pitch));
-        direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-
-        camera.setForward(direction);
-        std::cout << direction.x << std::endl;
-
         glfwPollEvents();
-        processInput(window.get());
+        glfwSwapBuffers(window.get());
     }
 
     return 0;
