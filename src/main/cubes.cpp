@@ -185,16 +185,7 @@ int main() {
     while (!glfwWindowShouldClose(window.get())) {
         timer.tick();
 
-        float pitch = mouseCapturer.getPitch();
-        float yaw = mouseCapturer.getYaw();
-
-        glm::vec3 direction;
-        direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-        direction.y = sin(glm::radians(pitch));
-        direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-        direction = glm::normalize(direction);
-
-        camera.setForward(direction);
+        camera.setForward(mouseCapturer.getPointingDirection());
 
         processInput(window.get());
 
