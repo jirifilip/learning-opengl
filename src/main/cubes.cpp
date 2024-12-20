@@ -75,7 +75,6 @@ int main() {
     auto windowRaw = window.get();
     mouseCapturer.captureForWindow(windowRaw);
 
-    // TODO: explore further
     loadGLAD();
 
     glViewport(0, 0, 800, 600);
