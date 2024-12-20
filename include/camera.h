@@ -23,12 +23,5 @@ public:
 
     void setForward(glm::vec3 forward);
 
-    const glm::vec3 getPosition();
-
-    const glm::vec3 getForward();
-
-    const glm::vec3 getUp();
-
     const glm::mat4x4 lookThrough();
-
 };
