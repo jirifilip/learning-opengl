@@ -15,7 +15,7 @@ public:
 
     ~GLFWHandler();
 
-    std::unique_ptr<GLFWwindow, GLFWWindowDeleter> createWindow();
+    std::unique_ptr<GLFWwindow, GLFWWindowDeleter> createWindow(float width, float height);
 
     void setCurrent(GLFWwindow* window);
 };

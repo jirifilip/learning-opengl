@@ -24,6 +24,9 @@
 #include "mouse_capturer.h"
 
 
+const float WINDOW_WIDTH { 1500 };
+const float WINDOW_HEIGHT { 1500 };
+
 Camera camera {
     glm::vec3{ 0, 0, 3 },
     glm::vec3{ 0, 0, -1 },
@@ -69,7 +72,7 @@ void loadGLAD() {
 
 int main() {
     auto glfw = GLFWHandler();
-    auto window = glfw.createWindow();
+    auto window = glfw.createWindow(WINDOW_HEIGHT, WINDOW_HEIGHT);
     glfw.setCurrent(window.get());
 
     auto windowRaw = window.get();
@@ -77,7 +80,7 @@ int main() {
 
     loadGLAD();
 
-    glViewport(0, 0, 800, 600);
+    glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     glEnable(GL_DEPTH_TEST);
 
     float cubeVertices[] = {
@@ -168,12 +171,8 @@ int main() {
     glEnableVertexAttribArray(1);
 
     glm::mat4 identity { 1 };
-    [[maybe_unused]] auto perspectiveProjectionMatrix = glm::perspective(
-        glm::radians(45.0f), static_cast<float>(800 / 600), 0.1f, 100.0f
-    );
-    // TODO: come back to this
-    [[maybe_unused]] auto orthographicProjectionMatrix = glm::ortho(
-        0.0f, 800.0f, 0.0f, 600.0f, 0.1f, 100.0f
+    auto perspectiveProjectionMatrix = glm::perspective(
+        glm::radians(45.0f), static_cast<float>(WINDOW_WIDTH / WINDOW_HEIGHT), 0.1f, 100.0f
     );
 
     shaderProgram.use();

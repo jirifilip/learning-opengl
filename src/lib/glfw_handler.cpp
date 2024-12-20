@@ -19,8 +19,8 @@ GLFWHandler::~GLFWHandler() {
 }
 
 
-std::unique_ptr<GLFWwindow, GLFWWindowDeleter> GLFWHandler::createWindow() {
-    GLFWwindow* rawWindow = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
+std::unique_ptr<GLFWwindow, GLFWWindowDeleter> GLFWHandler::createWindow(float width, float height) {
+    GLFWwindow* rawWindow = glfwCreateWindow(width, height, "LearnOpenGL", NULL, NULL);
 
     if (rawWindow == nullptr) {
         abortProgram("Failed to initialize window");
