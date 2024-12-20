@@ -36,7 +36,6 @@ GLFWTimer timer {};
 MouseCapturer mouseCapturer { 0.05 };
 
 
-
 void processInput(GLFWwindow* window) {
     auto keyStatus = glfwGetKey(window, GLFW_KEY_ESCAPE);
     auto dt = timer.getTimeDifference();
