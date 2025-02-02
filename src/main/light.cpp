@@ -53,6 +53,10 @@ const float CUBE_VERTICES[] = {
     -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
 
+const glm::vec3 cubePositions[] = {
+    glm::vec3 { 0, 0, 0 }
+};
+
 
 const float WINDOW_WIDTH = 1000;
 const float WINDOW_HEIGHT = 1000;
@@ -75,9 +79,6 @@ int main() {
 
     glViewport(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT);
     glEnable(GL_DEPTH_TEST);
-
-    
-
 
     std::cout << "Light!" << std::endl;
 }
